@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sắc Màu Lễ Hội Xứ Thanh - Black & Purple Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,900;1,600&family=Montserrat:wght@400;500;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050208;
+            --blue-soft: #b829ff;
+            --blue-mint: #e2b2ff;
+            --milk-white: #f5f0ff;
+            --gold-light: #ffea9f;
+            --card-bg: rgba(12, 6, 18, 0.92);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; cursor: default; }
+        body { background: #000000; color: var(--milk-white); overflow: hidden; height: 100vh; width: 100vw; perspective: 1500px; user-select: none; }
+
+        #dna-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #nature-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; pointer-events: none; }
+
+        .nature-bg {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(184, 41, 255, 0.15), transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(138, 43, 226, 0.1), transparent 45%),
+                        radial-gradient(circle at 50% 50%, rgba(10, 4, 15, 0.98), #000000 75%);
+            z-index: 0; pointer-events: none;
+        }
+
+        /* Màn hình chờ bấm nút kích hoạt */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(5, 2, 10, 0.96); backdrop-filter: blur(25px);
+            z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.6s ease;
+        }
+        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+
+        .activate-btn {
+            background: linear-gradient(135deg, #b829ff, #6b11a8);
+            color: var(--gold-light); border: 2px solid var(--gold-light);
+            padding: 2vh 4vw; font-size: clamp(1.1rem, 1.5vw, 1.5rem); font-weight: 700;
+            border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 0 30px rgba(184, 41, 255, 0.6);
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-family: 'Playfair Display', serif;
+        }
+        .activate-btn:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 234, 159, 0.8); }
+
+        .progress-container { position: fixed; top: 0; left: 0; width: 100vw; height: 5px; background: rgba(255, 255, 255, 0.1); z-index: 100; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #b829ff, var(--milk-white), var(--gold-light)); box-shadow: 0 0 20px #b829ff; transition: width 0.4s ease-out; }
+
+        .stage {
+            position: relative; width: 100vw; height: 100vh; z-index: 2;
+            display: flex; justify-content: center; align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        .slide-card {
+            position: absolute; 
+            width: 82vw; height: 78vh;
+            max-width: 1250px; max-height: 750px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid #b829ff;
+            border-radius: 20px; 
+            padding: 3.5vh 4vw;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.9), inset 0 0 35px rgba(184, 41, 255, 0.2);
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transform: translateZ(-800px) scale(0.7);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+            display: flex; gap: 3.5vw; align-items: center; justify-content: space-between;
+            transform-style: preserve-3d;
+        }
+
+        .slide-card.active { opacity: 1; visibility: visible; pointer-events: all; transform: translateZ(0) scale(1); }
+
+        .slide-card.hero-card {
+            justify-content: center; text-align: center; flex-direction: column;
+            border-color: #b829ff;
+            background: linear-gradient(135deg, rgba(20, 8, 30, 0.95), rgba(5, 2, 10, 0.98));
+            box-shadow: 0 0 80px rgba(184, 41, 255, 0.4);
+        }
+
+        .text-side { flex: 1.2; z-index: 2; display: flex; flex-direction: column; justify-content: center; }
+        .img-side { flex: 1.1; text-align: center; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .badge {
+            display: inline-block; font-size: clamp(0.75rem, 1vw, 0.95rem); font-weight: 600; padding: 0.5vh 1.2vw; border-radius: 6px;
+            text-transform: uppercase; letter-spacing: 0.15vw; background: rgba(184, 41, 255, 0.15);
+            border: 1px solid #b829ff; color: var(--blue-mint); 
+            margin-bottom: 1.5vh; width: fit-content; font-family: 'Playfair Display', serif;
+            text-shadow: 0 0 10px rgba(184, 41, 255, 0.6);
+        }
+
+        h1.hero-title {
+            font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 3.8vw, 3.8rem); font-weight: 900;
+            color: var(--gold-light); text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(255, 234, 159, 0.6);
+            margin-bottom: 1.8vh; line-height: 1.2;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 2.5vw, 2.5rem); font-weight: 900;
+            text-transform: uppercase; line-height: 1.2; margin-bottom: 1.5vh;
+            color: var(--gold-light); letter-spacing: 1px;
+            border-bottom: 2px solid rgba(184, 41, 255, 0.4); padding-bottom: 0.8vh;
+            text-shadow: 0 0 15px rgba(255, 234, 159, 0.4);
+        }
+
+        p.hero-sub { font-size: clamp(1rem, 1.3vw, 1.35rem); color: var(--blue-mint); font-weight: 400; font-style: italic; line-height: 1.5; }
+
+        ul { font-size: clamp(0.9rem, 1.1vw, 1.15rem); line-height: 1.7; list-style: none; color: var(--milk-white); }
+        li { position: relative; padding-left: 2vw; margin-bottom: 1.2vh; }
+        li::before { content: '💜'; position: absolute; left: 0; font-size: 0.8rem; top: 0.1vh; }
+        li b { color: var(--gold-light); font-weight: 700; }
+
+        .img-frame {
+            width: 100%; max-width: 36vw; height: 40vh; max-height: 370px; min-height: 300px;
+            border-radius: 16px; overflow: hidden;
+            border: 3px solid #b829ff;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 35px rgba(184, 41, 255, 0.45);
+            background: #000; position: relative; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .img-frame img { 
+            width: 100% !important; height: 100% !important; object-fit: cover !important; 
+            filter: saturate(1.2) contrast(1.05); display: block;
+        }
+        
+        .caption { 
+            font-family: 'Dancing Script', cursive; font-size: clamp(1.2rem, 1.5vw, 1.6rem); color: var(--gold-light); margin-top: 1.4vh; display: block; 
+            text-shadow: 0 0 15px rgba(255, 234, 159, 0.7); width: 100%; text-align: center;
+        }
+
+        .slide-counter { position: fixed; top: 3vh; right: 3vw; z-index: 100; font-size: clamp(1.2rem, 1.6vw, 1.6rem); font-weight: 700; color: #b829ff; font-family: 'Playfair Display', serif; text-shadow: 0 0 10px rgba(184, 41, 255, 0.6); }
+        .slide-counter span { color: var(--gold-light); }
+    </style>
+</head>
+<body>
+
+    <!-- Màn hình chào bắt buộc bấm nút kích hoạt -->
+    <div id="splash-screen">
+        <h1 style="font-family: 'Playfair Display', serif; color: var(--gold-light); margin-bottom: 3vh; text-align: center; text-shadow: 0 0 20px rgba(255,234,159,0.5);">❄️ SẮC MÀU LỄ HỘI XỨ THANH ❄️</h1>
+        <button class="activate-btn" id="activate-btn">✨ Bấm vào đây để Khởi động & Vào Slide ✨</button>
+    </div>
+
+    <!-- Cả hai bài nhạc hoàn toàn không có loop, chạy đúng 1 lần duy nhất -->
+    <audio id="bg-audio" src="original_sound_hung492001yem.mp3"></audio>
+    <audio id="last2-audio" src="original_sound_hthanhdz102.mp3"></audio>
+
+    <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
+    <div class="nature-bg"></div>
+
+    <canvas id="dna-canvas"></canvas>
+    <canvas id="nature-canvas"></canvas>
+
+    <div class="slide-counter"><span id="curr">01</span> / <span id="total">13</span></div>
+
+    <div class="stage" id="stage">
+
+        <!-- Slide Mới Thêm Vào Trước Nội Dung 1[cite: 3] -->
+        <div class="slide-card hero-card active">
+            <h1 class="hero-title">🌟 LỜI MỞ ĐẦU 🌟</h1>
+            <p class="hero-sub" style="font-size: clamp(1.1rem, 1.5vw, 1.5rem); max-width: 800px; line-height: 1.6;">
+                Xứ Thanh - vùng đất địa linh nhân kiệt, nơi lưu giữ hàng trăm di sản văn hóa và lễ hội truyền thống đặc sắc ngàn đời. Kính mời cô và các bạn cùng bước vào hành trình khám phá!
+            </p>
+            <div style="margin-top: 3vh; display: inline-block; padding: 1vh 2.5vw; background: rgba(138, 203, 254, 0.18); border: 1px solid var(--blue-soft); border-radius: 8px;">
+                <span style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-weight: 600; letter-spacing: 0.15vw; font-size: clamp(0.85rem, 1vw, 1.05rem);">[ SỬ DỤNG PHÍM MŨI TÊN HOẶC CLICK CHUỘT ĐỂ CHUYỂN SLIDE ]</span>
+            </div>
+        </div>
+
+        <!-- Slide 1 (Cũ) -->
+        <div class="slide-card hero-card">
+            <h1 class="hero-title">❄️ SẮC MÀU LỄ HỘI XỨ THANH ❄️</h1>
+            <p class="hero-sub">Hành trình hòa mình vào thiên nhiên, non nước và không gian di sản đất Thanh</p>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Thọ Xuân • Di sản Quốc gia đặc biệt</span>
+                <h2>1. Lễ Hội Lam Kinh</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Khu di tích Quốc gia đặc biệt Lam Kinh, Thọ Xuân</li>
+                    <li><b>Thời gian:</b> Ngày 21 - 22/8 Âm lịch hàng năm</li>
+                    <li><b>Ý nghĩa:</b> Tưởng nhớ Anh hùng dân tộc Lê Lợi & vinh danh cuộc khởi nghĩa Lam Sơn.</li>
+                    <li><b>Hoạt động:</b> Tế lễ trang nghiêm tại Sân Rồng, rước kiệu vua, diễn xướng trò Xuân Phả.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://images.vietnamtourism.gov.vn/vn/images/2023/thang_10/0610.le_hoi_lam_kinh_7.jpg" alt="Lam Kinh" loading="eager"></div>
+                <span class="caption">~ Hào khí Lam Sơn giữa ngàn xanh đại ngàn ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Bỉm Sơn • Tín ngưỡng linh thiêng</span>
+                <h2>2. Lễ Hội Đền Sòng Sơn</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Phường Bắc Sơn, Thị xã Bỉm Sơn</li>
+                    <li><b>Thời gian:</b> Tháng 2 Âm lịch (Chính hội 26/2)</li>
+                    <li><b>Ý nghĩa:</b> Tôn vinh Thánh mẫu Liễu Hạnh - một trong Tứ bất tử Việt Nam.</li>
+                    <li><b>Hoạt động:</b> Lễ rước bóng, rước kiệu Thánh Mẫu, thực hành nghi lễ hầu đồng.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://file.36.com.vn/2023/06/27/s-den-song-son-4.jpg?1687852396442" alt="Sòng Sơn" loading="eager"></div>
+                <span class="caption">~ Cảnh sắc thanh tịnh nơi Đền Sòng Sơn ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Hậu Lộc • Hào khí lịch sử</span>
+                <h2>3. Lễ Hội Đền Bà Triệu</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Xã Triệu Lộc, Huyện Hậu Lộc</li>
+                    <li><b>Thời gian:</b> Ngày 21 - 23/3 Âm lịch</li>
+                    <li><b>Ý nghĩa:</b> Kỷ niệm ngày mất Nữ anh hùng Triệu Thị Trinh chống quân Ngô.</li>
+                    <li><b>Hoạt động:</b> Nghi thức rước kiệu voi, tế nữ quan, đấu vật truyền thống.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://i.pinimg.com/736x/e6/f9/19/e6f91912df85ad10d9434159ac7c4471.jpg" alt="Bà Triệu" loading="eager"></div>
+                <span class="caption">~ Khí phách hiên ngang giữa đất trời Hậu Lộc ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Như Thanh • Tín ngưỡng dân gian</span>
+                <h2>4. Lễ Hội Phủ Na</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Xã Xuân Du, Huyện Như Thanh</li>
+                    <li><b>Thời gian:</b> Từ mùng 1 đến hết tháng Giêng Âm lịch</li>
+                    <li><b>Ý nghĩa:</b> Tín ngưỡng thờ Mẫu, cầu bình an, tài lộc đầu năm mới.</li>
+                    <li><b>Hoạt động:</b> Dâng hương hành hương, xin nước thiêng tại Giếng Cô, Giếng Cậu.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://tse1.mm.bing.net/th/id/OIP.2Lkt6e2jxldFYKU1tFgBFAHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Phủ Na" loading="eager"></div>
+                <span class="caption">~ Miền sơn cước Phủ Na linh thiêng ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Yên Định • Di sản ngàn năm</span>
+                <h2>5. Lễ Hội Đền Đồng Cổ</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Xã Yên Thọ, Huyện Yên Định</li>
+                    <li><b>Thời gian:</b> Ngày 15 - 16/3 Âm lịch</li>
+                    <li><b>Ý nghĩa:</b> Thờ Thần Trống Đồng - vị thần hộ quốc an dân thời Lý, Trần, Lê.</li>
+                    <li><b>Hoạt động:</b> Lễ rước linh vị, đánh trống đồng cổ, hội thi rước kiệu.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://congdankhuyenhoc.qltns.mediacdn.vn/thumb_w/840/449484899827462144/2024/5/11/dong-co-110523-3-17153965718591325474060.jpg" alt="Đồng Cổ" loading="eager"></div>
+                <span class="caption">~ Âm vang cổ tích bên dòng Mã giang ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Sầm Sơn • Văn hóa miền biển</span>
+                <h2>6. Lễ Hội Cầu Ngư</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Thành phố Sầm Sơn & các vùng ven biển xứ Thanh</li>
+                    <li><b>Thời gian:</b> Đầu xuân hoặc dịp mở mùa đánh bắt hải sản</li>
+                    <li><b>Ý nghĩa:</b> Tôn vinh Cá Ông, cầu mưa thuận gió hòa, tôm cá đầy khoang.</li>
+                    <li><b>Hoạt động:</b> Tế lễ nghinh thần, múa chèo cạn, hội thi đua thuyền trên biển.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://tse1.mm.bing.net/th/id/OIP.bZMeDlsRaHWrsLnxYfYpBAHaE5?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Cầu Ngư" loading="eager"></div>
+                <span class="caption">~ Sóng nước Sầm Sơn dạt dào tôm cá ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Nga Sơn • Truyền thuyết dưa hấu</span>
+                <h2>7. Lễ Hội Mai An Tiêm</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Xã Nga Phú, Huyện Nga Sơn</li>
+                    <li><b>Thời gian:</b> Ngày 12 - 15/3 Âm lịch</li>
+                    <li><b>Ý nghĩa:</b> Tri ân Đức Thánh Mai An Tiêm - người khai phá giống dưa hấu đỏ.</li>
+                    <li><b>Hoạt động:</b> Dâng hương, thi khắc quả dưa hấu nghệ thuật, kéo co.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://cly.1cdn.vn/2025/04/08/le_hoi_mai_an_tiem3(1).jpg" alt="Mai An Tiêm" loading="eager"></div>
+                <span class="caption">~ Đất trời Nga Sơn cội nguồn sức sống ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Mường Lát • Bản sắc vùng cao</span>
+                <h2>8. Lễ Hội Khai Hạ Mường Lát</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Các huyện miền núi cao xứ Thanh</li>
+                    <li><b>Thời gian:</b> Tháng Giêng Âm lịch hàng năm</li>
+                    <li><b>Ý nghĩa:</b> Cầu mùa màng bội thu, bản làng ấm no của đồng bào Mường, Thái.</li>
+                    <li><b>Hoạt động:</b> Múa xòe, khua luống, bắn nỏ, ném còn, uống rượu cần.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://c.dhcn.vn/img/desktop/d-baophutho.vn/news/2605/111d6152957t12018l1-le-hoi15.webp" alt="Khai Hạ" loading="eager"></div>
+                <span class="caption">~ Núi rừng Mường Lát trùng điệp sương mờ ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">Sầm Sơn • Sử thi biển cả</span>
+                <h2>9. Lễ Hội Đền Độc Cước</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Hòn Cổ Giải, P. Trường Sơn, TP Sầm Sơn</li>
+                    <li><b>Thời gian:</b> Ngày 16/1 Âm lịch & Lễ hội bánh chưng hè</li>
+                    <li><b>Ý nghĩa:</b> Thờ vị thần tự xẻ thân bảo vệ dân chài và đánh diệt quỷ biển.</li>
+                    <li><b>Hoạt động:</b> Tế lễ nghinh thần, rước kiệu, thi làm bánh chưng - bánh giầy.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://static.vinwonders.com/production/di-le-den-doc-cuoc.jpg" alt="Độc Cước" loading="eager"></div>
+                <span class="caption">~ Sóng cả reo hò bên Hòn Trống Mái ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 11 (Mục cuối số 1 - Phát nhạc mới đúng 1 lần) -->
+        <div class="slide-card">
+            <div class="text-side">
+                <span class="badge">TP Thanh Hóa • Tâm linh đô thị</span>
+                <h2>10. Lễ Hội Chùa Thanh Hà</h2>
+                <ul>
+                    <li><b>Địa điểm:</b> Phường Trường Thi, Thành phố Thanh Hóa</li>
+                    <li><b>Thời gian:</b> Ngày mùng 8 - 10 tháng Giêng Âm lịch</li>
+                    <li><b>Ý nghĩa:</b> Cầu quốc thái dân an, tôn vinh giá trị Phật giáo truyền thống.</li>
+                    <li><b>Hoạt động:</b> Tế lễ Phật giáo, thả hoa đăng, viết thư pháp đầu xuân.</li>
+                </ul>
+            </div>
+            <div class="img-side">
+                <div class="img-frame"><img src="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2023/1/23/1140816/Cau-May-5.JPG" alt="Thanh Hà" loading="eager"></div>
+                <span class="caption">~ Ánh sáng hoa đăng thanh tịnh ~</span>
+            </div>
+        </div>
+
+        <!-- Slide 12 (Mục cuối số 2 - Phát nhạc mới đúng 1 lần) -->
+        <div class="slide-card hero-card">
+            <h1 class="hero-title" style="font-size: clamp(2.1rem, 3.6vw, 3.5rem);">❄️ CẢM ƠN CÔ VÀ CÁC BẠN ❄️</h1>
+            <p class="hero-sub" style="color: var(--gold-light); font-style: normal; margin-top: 1.8vh; font-family: 'Playfair Display', serif;">Tổ 1 đủ wow chx !</p>
+        </div>
+
+    </div>
+
+    <script>
+        const splashScreen = document.getElementById('splash-screen');
+        const activateBtn = document.getElementById('activate-btn');
+        const bgAudio = document.getElementById('bg-audio');
+        const last2Audio = document.getElementById('last2-audio');
+
+        let bgStarted = false; // Khóa chặt: chỉ cho phép bật nhạc nền chính 1 lần duy nhất từ nút bấm
+
+        activateBtn.addEventListener('click', () => {
+            splashScreen.classList.add('hidden');
+            if (!bgStarted) {
+                bgAudio.volume = 0.7;
+                bgAudio.play().then(() => {
+                    bgStarted = true;
+                }).catch(e => console.log(e));
+            }
+        });
+
+        // Web Audio Synthesizer: Âm thanh sáo trúc du dương khi đổi slide
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playNatureChime() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const pentatonic = [392.00, 440.00, 523.25, 587.33, 659.25, 783.99];
+            const freq = pentatonic[Math.floor(Math.random() * pentatonic.length)];
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.0);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 1.0);
+        }
+
+        // Slide Engine Logic
+        const cards = document.querySelectorAll('.slide-card');
+        const progressBar = document.getElementById('progress');
+        let idx = 0;
+        document.getElementById('total').innerText = String(cards.length).padStart(2, '0');
+
+        function updateCard(n) {
+            playNatureChime();
+            triggerShockwave();
+            cards[idx].classList.remove('active');
+            idx = (n + cards.length) % cards.length;
+            cards[idx].classList.add('active');
+            document.getElementById('curr').innerText = String(idx + 1).padStart(2, '0');
+            progressBar.style.width = `${((idx + 1) / cards.length) * 100}%`;
+
+            // Kiểm soát âm thanh nghiêm ngặt:
+            // - Ở 2 slide cuối (index >= 11): Tắt nhạc đầu, bật nhạc mới đúng 1 lần[cite: 3].
+            // - Ở các slide từ 0 đến 10: Nhạc đầu tiếp tục chạy tự nhiên (hoặc tự dừng khi hết bài nếu không loop), tuyệt đối không bao giờ bị kích hoạt phát lại khi chuyển slide[cite: 3].
+            if (idx >= 11) {
+                bgAudio.pause();
+                last2Audio.volume = 0.8;
+                if (last2Audio.paused && last2Audio.currentTime === 0) {
+                    last2Audio.play().catch(e => console.log(e));
+                }
+            } else {
+                last2Audio.pause();
+                last2Audio.currentTime = 0;
+            }
+        }
+
+        function nextSlide() { updateCard(idx + 1); }
+        function prevSlide() { updateCard(idx - 1); }
+
+        // Bắt sự kiện Click Chuột
+        window.addEventListener('click', () => {
+            if(splashScreen.classList.contains('hidden')) {
+                nextSlide();
+            }
+        });
+
+        // Bắt sự kiện Vuốt Cảm Ứng (Touch) trên điện thoại / máy tính bảng
+        let touchStartX = 0;
+        window.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        window.addEventListener('touchend', e => {
+            if(!splashScreen.classList.contains('hidden')) return;
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) {
+                nextSlide();
+            } else if (touchEndX > touchStartX + 50) {
+                prevSlide();
+            } else {
+                nextSlide();
+            }
+        }, {passive: true});
+
+        // Bắt sự kiện Bàn Phím
+        window.addEventListener('keydown', e => {
+            if(!splashScreen.classList.contains('hidden')) return;
+            if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            if(e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        // 3D Tilt Mouse
+        window.addEventListener('mousemove', e => {
+            const rx = (e.clientY / window.innerHeight - 0.5) * -10;
+            const ry = (e.clientX / window.innerWidth - 0.5) * 10;
+            const active = document.querySelector('.slide-card.active');
+            if(active) {
+                active.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+            }
+        });
+
+        // ==========================================================
+        // 1. CANVAS DƯỚI: DNA VÀ MÔ HÌNH NGUYÊN TỬ
+        // ==========================================================
+        const dnaCanvas = document.getElementById('dna-canvas');
+        const dnaCtx = dnaCanvas.getContext('2d');
+        let dw = dnaCanvas.width = window.innerWidth;
+        let dh = dnaCanvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            dw = dnaCanvas.width = window.innerWidth;
+            dh = dnaCanvas.height = window.innerHeight;
+        });
+
+        class Floating3DHelix {
+            constructor() {
+                this.x = Math.random() * dw;
+                this.y = Math.random() * dh;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.height = Math.random() * 120 + 100;
+                this.radius = Math.random() * 15 + 12;
+                this.speed = (Math.random() - 0.5) * 0.02;
+                this.angle = Math.random() * Math.PI * 2;
+                this.tilt = (Math.random() - 0.5) * 0.5;
+            }
+            update() {
+                this.angle += this.speed;
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if(this.x < -100) this.x = dw + 100;
+                if(this.x > dw + 100) this.x = -100;
+                if(this.y < -150) this.y = dh + 150;
+                if(this.y > dh + 150) this.y = -150;
+            }
+            draw() {
+                dnaCtx.save();
+                dnaCtx.translate(this.x, this.y);
+                dnaCtx.rotate(this.tilt);
+
+                let steps = 25;
+                let stepHeight = this.height / steps;
+                let startY = -this.height / 2;
+
+                for (let i = 0; i < steps; i++) {
+                    let currentAngle = this.angle + i * 0.25;
+                    let z1 = Math.cos(currentAngle);
+                    let z2 = Math.cos(currentAngle + Math.PI);
+
+                    let x1 = Math.sin(currentAngle) * this.radius;
+                    let y1 = startY + i * stepHeight;
+                    let x2 = Math.sin(currentAngle + Math.PI) * this.radius;
+                    let y2 = y1;
+
+                    let size1 = (z1 + 1.8) * 1.8;
+                    let size2 = (z2 + 1.8) * 1.8;
+
+                    if (i % 2 === 0) {
+                        let alpha = ((z1 + z2) / 2 + 1) / 2 * 0.35 + 0.1;
+                        dnaCtx.strokeStyle = `rgba(138, 203, 254, ${alpha})`;
+                        dnaCtx.lineWidth = 1.2;
+                        dnaCtx.beginPath();
+                        dnaCtx.moveTo(x1, y1);
+                        dnaCtx.lineTo(x2, y2);
+                        dnaCtx.stroke();
+                    }
+
+                    dnaCtx.fillStyle = '#8acbfe';
+                    dnaCtx.shadowColor = '#8acbfe';
+                    dnaCtx.shadowBlur = 8;
+                    dnaCtx.globalAlpha = (z1 + 1.6) / 2.6 * 0.8 + 0.2;
+                    dnaCtx.beginPath();
+                    dnaCtx.arc(x1, y1, size1, 0, Math.PI * 2);
+                    dnaCtx.fill();
+
+                    dnaCtx.fillStyle = '#f0f7ff';
+                    dnaCtx.shadowColor = '#f0f7ff';
+                    dnaCtx.shadowBlur = 8;
+                    dnaCtx.globalAlpha = (z2 + 1.6) / 2.6 * 0.8 + 0.2;
+                    dnaCtx.beginPath();
+                    dnaCtx.arc(x2, y2, size2, 0, Math.PI * 2);
+                    dnaCtx.fill();
+                }
+                dnaCtx.restore();
+            }
+        }
+
+        class AtomicModel {
+            constructor() {
+                this.x = Math.random() * dw;
+                this.y = Math.random() * dh;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.radiusX = Math.random() * 30 + 35;
+                this.radiusY = Math.random() * 15 + 15;
+                this.angle1 = Math.random() * Math.PI * 2;
+                this.angle2 = Math.random() * Math.PI * 2;
+                this.angle3 = Math.random() * Math.PI * 2;
+                this.speed1 = (Math.random() * 0.04 + 0.02);
+                this.speed2 = (Math.random() * 0.04 + 0.02) * -1;
+                this.speed3 = (Math.random() * 0.05 + 0.03);
+                this.tilt = Math.random() * Math.PI;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle1 += this.speed1;
+                this.angle2 += this.speed2;
+                this.angle3 += this.speed3;
+
+                if(this.x < -100) this.x = dw + 100;
+                if(this.x > dw + 100) this.x = -100;
+                if(this.y < -100) this.y = dh + 100;
+                if(this.y > dh + 100) this.y = -100;
+            }
+            draw() {
+                dnaCtx.save();
+                dnaCtx.translate(this.x, this.y);
+
+                dnaCtx.fillStyle = '#ffea9f';
+                dnaCtx.shadowColor = '#ffea9f';
+                dnaCtx.shadowBlur = 15;
+                dnaCtx.beginPath();
+                dnaCtx.arc(0, 0, 5, 0, Math.PI * 2);
+                dnaCtx.fill();
+
+                dnaCtx.strokeStyle = 'rgba(138, 203, 254, 0.25)';
+                dnaCtx.lineWidth = 1;
+                dnaCtx.shadowBlur = 0;
+
+                dnaCtx.save();
+                dnaCtx.rotate(this.tilt);
+                dnaCtx.beginPath();
+                dnaCtx.ellipse(0, 0, this.radiusX, this.radiusY, 0, 0, Math.PI * 2);
+                dnaCtx.stroke();
+                
+                let ex1 = Math.cos(this.angle1) * this.radiusX;
+                let ey1 = Math.sin(this.angle1) * this.radiusY;
+                dnaCtx.fillStyle = '#ffffff';
+                dnaCtx.shadowColor = '#8acbfe';
+                dnaCtx.shadowBlur = 10;
+                dnaCtx.beginPath();
+                dnaCtx.arc(ex1, ey1, 3, 0, Math.PI * 2);
+                dnaCtx.fill();
+                dnaCtx.restore();
+
+                dnaCtx.save();
+                dnaCtx.rotate(this.tilt + Math.PI / 3);
+                dnaCtx.beginPath();
+                dnaCtx.ellipse(0, 0, this.radiusX, this.radiusY, 0, 0, Math.PI * 2);
+                dnaCtx.stroke();
+
+                let ex2 = Math.cos(this.angle2) * this.radiusX;
+                let ey2 = Math.sin(this.angle2) * this.radiusY;
+                dnaCtx.fillStyle = '#ffea9f';
+                dnaCtx.shadowColor = '#ffea9f';
+                dnaCtx.shadowBlur = 10;
+                dnaCtx.beginPath();
+                dnaCtx.arc(ex2, ey2, 3, 0, Math.PI * 2);
+                dnaCtx.fill();
+                dnaCtx.restore();
+
+                dnaCtx.save();
+                dnaCtx.rotate(this.tilt - Math.PI / 3);
+                dnaCtx.beginPath();
+                dnaCtx.ellipse(0, 0, this.radiusX, this.radiusY, 0, 0, Math.PI * 2);
+                dnaCtx.stroke();
+
+                let ex3 = Math.cos(this.angle3) * this.radiusX;
+                let ey3 = Math.sin(this.angle3) * this.radiusY;
+                dnaCtx.fillStyle = '#8acbfe';
+                dnaCtx.shadowColor = '#8acbfe';
+                dnaCtx.shadowBlur = 10;
+                dnaCtx.beginPath();
+                dnaCtx.arc(ex3, ey3, 3, 0, Math.PI * 2);
+                dnaCtx.fill();
+                dnaCtx.restore();
+
+                dnaCtx.restore();
+            }
+        }
+
+        let dnaHelices = Array.from({length: 5}, () => new Floating3DHelix());
+        let atoms = Array.from({length: 6}, () => new AtomicModel());
+
+        // ==========================================================
+        // 2. CANVAS TRÊN: BENZEN, BÌNH TAM GIÁC & LỰC HÚT CHUỘT
+        // ==========================================================
+        const canvas = document.getElementById('nature-canvas');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        });
+
+        let mouse = { x: w / 2, y: h / 2, isMoving: false };
+        let moveTimer = null;
+
+        window.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            mouse.isMoving = true;
+
+            clearTimeout(moveTimer);
+            moveTimer = setTimeout(() => {
+                mouse.isMoving = false;
+            }, 60);
+        });
+
+        const PARTICLE_COUNT = 500;
+        let particles = [];
+
+        for(let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: (Math.random() - 0.5) * 0.6,
+                size: Math.random() * 1.8 + 0.6,
+                color: Math.random() > 0.4 ? '#8acbfe' : (Math.random() > 0.5 ? '#f0f7ff' : '#ffea9f'),
+                alpha: Math.random() * 0.8 + 0.2,
+                pulse: Math.random() * 0.02 + 0.005
+            });
+        }
+
+        const benzeneStructures = [
+            { subs: ['CH₃'], vertices: [0] },
+            { subs: ['Br'], vertices: [1] },
+            { subs: ['OH', 'CH₃'], vertices: [0, 3] },
+            { subs: ['NO₂'], vertices: [2] },
+            { subs: ['Cl', 'Cl'], vertices: [1, 4] },
+            { subs: ['COOH'], vertices: [5] },
+            { subs: ['NH₂', 'CH₂', 'Br'], vertices: [0, 2, 4] },
+            { subs: ['CH=CH₂'], vertices: [3] },
+            { subs: ['OH', 'NO₂', 'CH₃'], vertices: [0, 2, 4] },
+            { subs: ['SO₃H'], vertices: [1] }
+        ];
+
+        class PerfectCleanBenzene {
+            constructor(struct) {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 18 + 16;
+                this.angle = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.007;
+                this.subs = struct.subs;
+                this.vertices = struct.vertices;
+                this.color = Math.random() > 0.5 ? 'rgba(138, 203, 254, 0.85)' : 'rgba(240, 247, 255, 0.9)';
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += this.rotSpeed;
+
+                if(this.x < -80) this.x = w + 80;
+                if(this.x > w + 80) this.x = -80;
+                if(this.y < -80) this.y = h + 80;
+                if(this.y > h + 80) this.y = -80;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 1.8;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 8;
+
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    let a = (i * Math.PI) / 3 - Math.PI / 6;
+                    let hx = Math.cos(a) * this.size;
+                    let hy = Math.sin(a) * this.size;
+                    if (i === 0) ctx.moveTo(hx, hy);
+                    else ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size * 0.45, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = this.color;
+                ctx.font = 'bold 10px Montserrat, sans-serif';
+                
+                for (let i = 0; i < this.subs.length; i++) {
+                    let vIdx = this.vertices[i];
+                    let a = (vIdx * Math.PI) / 3 - Math.PI / 6;
+                    
+                    let x1 = Math.cos(a) * this.size;
+                    let y1 = Math.sin(a) * this.size;
+                    let x2 = Math.cos(a) * (this.size + 14);
+                    let y2 = Math.sin(a) * (this.size + 14);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+
+                    ctx.save();
+                    ctx.translate(x2, y2);
+                    
+                    if (Math.cos(a) > 0.2) {
+                        ctx.textAlign = 'left';
+                    } else if (Math.cos(a) < -0.2) {
+                        ctx.textAlign = 'right';
+                    } else {
+                        ctx.textAlign = 'center';
+                    }
+                    ctx.textBaseline = 'middle';
+
+                    ctx.fillText(this.subs[i], Math.cos(a) > 0.2 ? 4 : (Math.cos(a) < -0.2 ? -4 : 0), Math.sin(a) > 0.2 ? 4 : (Math.sin(a) < -0.2 ? -4 : 0));
+                    ctx.restore();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        class ErlenmeyerFlask {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.35;
+                this.vy = (Math.random() - 0.5) * 0.35;
+                this.scale = Math.random() * 0.35 + 0.45;
+                this.angle = (Math.random() - 0.5) * 0.3;
+                this.rotSpeed = (Math.random() - 0.5) * 0.004;
+                this.bubbleTimer = 0;
+                this.color = Math.random() > 0.5 ? 'rgba(138, 203, 254, 0.85)' : 'rgba(240, 247, 255, 0.85)';
+                this.liquidColor = Math.random() > 0.5 ? 'rgba(138, 203, 254, 0.35)' : 'rgba(255, 234, 159, 0.35)';
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += this.rotSpeed;
+                this.bubbleTimer += 0.05;
+
+                if(this.x < -100) this.x = w + 100;
+                if(this.x > w + 100) this.x = -100;
+                if(this.y < -100) this.y = h + 100;
+                if(this.y > h + 100) this.y = -100;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.scale(this.scale, this.scale);
+
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+
+                ctx.beginPath();
+                ctx.moveTo(-12, -40);
+                ctx.lineTo(12, -40);
+                ctx.lineTo(12, -22);
+                ctx.lineTo(38, 32);
+                ctx.quadraticCurveTo(0, 38, -38, 32);
+                ctx.lineTo(-12, -22);
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.ellipse(0, -40, 14, 4, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = this.liquidColor;
+                ctx.beginPath();
+                ctx.moveTo(-28, 12);
+                ctx.quadraticCurveTo(0, 12 + Math.sin(this.bubbleTimer) * 3, 28, 12);
+                ctx.lineTo(36, 30);
+                ctx.quadraticCurveTo(0, 36, -36, 30);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                let b1Y = 22 - ((this.bubbleTimer * 12) % 24);
+                let b2Y = 25 - (((this.bubbleTimer + 1.5) * 10) % 22);
+
+                ctx.beginPath();
+                ctx.arc(-8, b1Y, 2.5, 0, Math.PI * 2);
+                ctx.arc(10, b2Y, 1.8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        let benzenes = benzeneStructures.map(struct => new PerfectCleanBenzene(struct));
+        let flasks = Array.from({length: 4}, () => new ErlenmeyerFlask());
+
+        function triggerShockwave() {
+            let cx = w / 2;
+            let cy = h / 2;
+            particles.forEach(p => {
+                let angle = Math.atan2(p.y - cy, p.x - cx);
+                let blastSpeed = Math.random() * 12 + 5;
+                p.vx = Math.cos(angle) * blastSpeed;
+                p.vy = Math.sin(angle) * blastSpeed;
+            });
+        }
+
+        function renderAll() {
+            dnaCtx.clearRect(0, 0, dw, dh);
+            dnaHelices.forEach(d => {
+                d.update();
+                d.draw();
+            });
+            atoms.forEach(a => {
+                a.update();
+                a.draw();
+            });
+
+            ctx.clearRect(0, 0, w, h);
+            
+            for(let i = 0; i < PARTICLE_COUNT; i++) {
+                let p = particles[i];
+
+                if (mouse.isMoving) {
+                    let dx = mouse.x - p.x;
+                    let dy = mouse.y - p.y;
+                    let distSq = dx * dx + dy * dy;
+
+                    if(distSq < 50000) {
+                        let force = 0.0012;
+                        p.vx += dx * force;
+                        p.vy += dy * force;
+                    }
+                }
+
+                p.vx += (Math.random() - 0.5) * 0.05;
+                p.vy += (Math.random() - 0.5) * 0.05;
+
+                let maxSpeed = 2.5;
+                let speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if(speed > maxSpeed) {
+                    p.vx = (p.vx / speed) * maxSpeed;
+                    p.vy = (p.vy / speed) * maxSpeed;
+                }
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                p.alpha += p.pulse;
+                let currentAlpha = Math.abs(Math.sin(p.alpha)) * 0.8 + 0.2;
+
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = currentAlpha;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+
+                if(p.x < 0) p.x = w;
+                if(p.x > w) p.x = 0;
+                if(p.y < 0) p.y = h;
+                if(p.y > h) p.y = 0;
+            }
+
+            benzenes.forEach(b => {
+                b.update();
+                b.draw();
+            });
+
+            flasks.forEach(f => {
+                f.update();
+                f.draw();
+            });
+
+            requestAnimationFrame(renderAll);
+        }
+        renderAll();
+    </script>
+</body>
+</html>
