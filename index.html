@@ -29,7 +29,7 @@
             z-index: 0; pointer-events: none;
         }
 
-        /* Màn hình chờ bấm nút kích hoạt */
+        /* Màn hình chờ bắt buộc bấm nút kích hoạt */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(5, 2, 10, 0.96); backdrop-filter: blur(25px);
@@ -142,13 +142,13 @@
 </head>
 <body>
 
-    <!-- Màn hình chào bắt buộc bấm nút kích hoạt -->
+    <!-- Màn hình chờ bắt buộc bấm nút kích hoạt -->
     <div id="splash-screen">
         <h1 style="font-family: 'Playfair Display', serif; color: var(--gold-light); margin-bottom: 3vh; text-align: center; text-shadow: 0 0 20px rgba(255,234,159,0.5);">❄️ SẮC MÀU LỄ HỘI XỨ THANH ❄️</h1>
         <button class="activate-btn" id="activate-btn">✨ Bấm vào đây để Khởi động & Vào Slide ✨</button>
     </div>
 
-    <!-- Cả hai bài nhạc hoàn toàn không có loop, chạy đúng 1 lần duy nhất -->
+    <!-- 2 File nhạc -->
     <audio id="bg-audio" src="original_sound_hung492001yem.mp3"></audio>
     <audio id="last2-audio" src="original_sound_hthanhdz102.mp3"></audio>
 
@@ -162,24 +162,24 @@
 
     <div class="stage" id="stage">
 
-        <!-- Slide Mới Thêm Vào Trước Nội Dung 1[cite: 3] -->
+        <!-- Slide Mới (01/13) -->
         <div class="slide-card hero-card active">
             <h1 class="hero-title">🌟 LỜI MỞ ĐẦU 🌟</h1>
             <p class="hero-sub" style="font-size: clamp(1.1rem, 1.5vw, 1.5rem); max-width: 800px; line-height: 1.6;">
                 Xứ Thanh - vùng đất địa linh nhân kiệt, nơi lưu giữ hàng trăm di sản văn hóa và lễ hội truyền thống đặc sắc ngàn đời. Kính mời cô và các bạn cùng bước vào hành trình khám phá!
             </p>
             <div style="margin-top: 3vh; display: inline-block; padding: 1vh 2.5vw; background: rgba(138, 203, 254, 0.18); border: 1px solid var(--blue-soft); border-radius: 8px;">
-                <span style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-weight: 600; letter-spacing: 0.15vw; font-size: clamp(0.85rem, 1vw, 1.05rem);">[ BẮT ĐẦU ]</span>
+                <span style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-weight: 600; letter-spacing: 0.15vw; font-size: clamp(0.85rem, 1vw, 1.05rem);">[ TỰ ĐỘNG CHUYỂN SLIDE 5-8s HOẶC DÙNG PHÍM MŨI TÊN/CLICK ]</span>
             </div>
         </div>
 
-        <!-- Slide 1 (Cũ) -->
+        <!-- Slide 1 Cũ (02/13) -->
         <div class="slide-card hero-card">
             <h1 class="hero-title">❄️ SẮC MÀU LỄ HỘI XỨ THANH ❄️</h1>
             <p class="hero-sub">Hành trình hòa mình vào thiên nhiên, non nước và không gian di sản đất Thanh</p>
         </div>
 
-        <!-- Slide 2 -->
+        <!-- Slide 2 (03/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Thọ Xuân • Di sản Quốc gia đặc biệt</span>
@@ -197,7 +197,7 @@
             </div>
         </div>
 
-        <!-- Slide 3 -->
+        <!-- Slide 3 (04/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Bỉm Sơn • Tín ngưỡng linh thiêng</span>
@@ -215,7 +215,7 @@
             </div>
         </div>
 
-        <!-- Slide 4 -->
+        <!-- Slide 4 (05/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Hậu Lộc • Hào khí lịch sử</span>
@@ -233,7 +233,7 @@
             </div>
         </div>
 
-        <!-- Slide 5 -->
+        <!-- Slide 5 (06/13) - TẬP TRUNG: BẮT ĐẦU PHÁT NHẠC THỨ 2 TẠI ĐÂY -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Như Thanh • Tín ngưỡng dân gian</span>
@@ -251,7 +251,7 @@
             </div>
         </div>
 
-        <!-- Slide 6 -->
+        <!-- Slide 6 (07/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Yên Định • Di sản ngàn năm</span>
@@ -269,7 +269,7 @@
             </div>
         </div>
 
-        <!-- Slide 7 -->
+        <!-- Slide 7 (08/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Sầm Sơn • Văn hóa miền biển</span>
@@ -287,7 +287,7 @@
             </div>
         </div>
 
-        <!-- Slide 8 -->
+        <!-- Slide 8 (09/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Nga Sơn • Truyền thuyết dưa hấu</span>
@@ -305,7 +305,7 @@
             </div>
         </div>
 
-        <!-- Slide 9 -->
+        <!-- Slide 9 (10/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Mường Lát • Bản sắc vùng cao</span>
@@ -323,7 +323,7 @@
             </div>
         </div>
 
-        <!-- Slide 10 -->
+        <!-- Slide 10 (11/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Sầm Sơn • Sử thi biển cả</span>
@@ -341,7 +341,7 @@
             </div>
         </div>
 
-        <!-- Slide 11 (Mục cuối số 1 - Phát nhạc mới đúng 1 lần) -->
+        <!-- Slide 11 (12/13) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">TP Thanh Hóa • Tâm linh đô thị</span>
@@ -359,7 +359,7 @@
             </div>
         </div>
 
-        <!-- Slide 12 (Mục cuối số 2 - Phát nhạc mới đúng 1 lần) -->
+        <!-- Slide 12 (13/13 - Slide Cuối Cùng) -->
         <div class="slide-card hero-card">
             <h1 class="hero-title" style="font-size: clamp(2.1rem, 3.6vw, 3.5rem);">❄️ CẢM ƠN CÔ VÀ CÁC BẠN ❄️</h1>
             <p class="hero-sub" style="color: var(--gold-light); font-style: normal; margin-top: 1.8vh; font-family: 'Playfair Display', serif;">Tổ 1 đủ wow chx !</p>
@@ -373,7 +373,8 @@
         const bgAudio = document.getElementById('bg-audio');
         const last2Audio = document.getElementById('last2-audio');
 
-        let bgStarted = false; // Khóa chặt: chỉ cho phép bật nhạc nền chính 1 lần duy nhất từ nút bấm
+        let bgStarted = false; 
+        let autoSlideTimer = null; 
 
         activateBtn.addEventListener('click', () => {
             splashScreen.classList.add('hidden');
@@ -383,6 +384,7 @@
                     bgStarted = true;
                 }).catch(e => console.log(e));
             }
+            startAutoSlideTimer(); 
         });
 
         // Web Audio Synthesizer: Âm thanh sáo trúc du dương khi đổi slide
@@ -416,10 +418,10 @@
             document.getElementById('curr').innerText = String(idx + 1).padStart(2, '0');
             progressBar.style.width = `${((idx + 1) / cards.length) * 100}%`;
 
-            // Kiểm soát âm thanh nghiêm ngặt:
-            // - Ở 2 slide cuối (index >= 11): Tắt nhạc đầu, bật nhạc mới đúng 1 lần[cite: 3].
-            // - Ở các slide từ 0 đến 10: Nhạc đầu tiếp tục chạy tự nhiên (hoặc tự dừng khi hết bài nếu không loop), tuyệt đối không bao giờ bị kích hoạt phát lại khi chuyển slide[cite: 3].
-            if (idx >= 11) {
+            // Xử lý chuyển nhạc ở slide 5 (Mục "4. Lễ Hội Phủ Na" - index 5):
+            // - Từ Slide 1 -> 4 (index 0 đến 4): Nhạc 1 chạy.
+            // - Từ Slide 5 trở đi (index >= 5): Dừng nhạc 1, bật nhạc 2 đúng 1 lần.
+            if (idx >= 5) {
                 bgAudio.pause();
                 last2Audio.volume = 0.8;
                 if (last2Audio.paused && last2Audio.currentTime === 0) {
@@ -429,12 +431,27 @@
                 last2Audio.pause();
                 last2Audio.currentTime = 0;
             }
+
+            // Đặt lại bộ đếm thời gian tự động chuyển slide
+            startAutoSlideTimer();
         }
 
         function nextSlide() { updateCard(idx + 1); }
         function prevSlide() { updateCard(idx - 1); }
 
-        // Bắt sự kiện Click Chuột
+        // Logic tự động chuyển slide từ 5 đến 8 giây
+        function startAutoSlideTimer() {
+            if (autoSlideTimer) clearTimeout(autoSlideTimer);
+
+            if (idx < cards.length - 1) {
+                const randomTime = Math.floor(Math.random() * (8000 - 5000 + 1)) + 5000;
+                autoSlideTimer = setTimeout(() => {
+                    nextSlide();
+                }, randomTime);
+            }
+        }
+
+        // Bắt sự kiện Click Chuột Chuyển Thủ Công
         window.addEventListener('click', () => {
             if(splashScreen.classList.contains('hidden')) {
                 nextSlide();
@@ -459,7 +476,7 @@
             }
         }, {passive: true});
 
-        // Bắt sự kiện Bàn Phím
+        // Bắt sự kiện Bàn Phím Chuyển Thủ Công
         window.addEventListener('keydown', e => {
             if(!splashScreen.classList.contains('hidden')) return;
             if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
