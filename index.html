@@ -44,7 +44,7 @@
             box-shadow: 0 0 60px rgba(184, 41, 255, 0.35), inset 0 0 30px rgba(184, 41, 255, 0.2);
             text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2.2vh;
             transform-style: preserve-3d; transform: rotateX(0deg) rotateY(0deg);
-            transition: transform 0.1s ease-out; opacity: 0; animation: cardFadeIn 0.5s ease 0.3s forwards;
+            transition: transform 0.15s cubic-bezier(0.1, 1, 0.3, 1); opacity: 0; animation: cardFadeIn 0.5s ease 0.3s forwards;
         }
 
         @keyframes cardFadeIn { to { opacity: 1; } }
@@ -81,8 +81,14 @@
 
         .char-fly {
             display: inline-block; opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease, text-shadow 0.3s ease;
             animation: flyAndAssemble 2.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             animation-delay: calc(0.3s + var(--i) * 0.025s);
+        }
+        .char-fly:hover {
+            transform: translateY(-10px) scale(1.25) translateZ(30px);
+            color: var(--gold-light);
+            text-shadow: 0 0 20px var(--gold-light), 0 0 35px var(--blue-soft);
         }
 
         @keyframes flyAndAssemble {
@@ -95,7 +101,7 @@
         .agenda-item {
             background: rgba(184, 41, 255, 0.12); border: 1.5px solid rgba(184, 41, 255, 0.5);
             border-radius: 12px; padding: 1.2vh 0.5vw; font-size: clamp(0.7rem, 0.88vw, 0.92rem); font-weight: 700;
-            color: var(--milk-white); transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); text-align: center;
+            color: var(--milk-white); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); opacity: 0;
             animation: menuFlyIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             animation-delay: calc(1.4s + var(--m-delay) * 0.1s);
@@ -108,19 +114,19 @@
 
         .agenda-item:hover { 
             background: rgba(184, 41, 255, 0.35); border-color: var(--gold-light); color: var(--gold-light); 
-            transform: translateY(-4px) scale(1.06); box-shadow: 0 0 20px rgba(255, 234, 159, 0.6); 
+            transform: translateY(-6px) scale(1.08) translateZ(20px); box-shadow: 0 0 25px rgba(255, 234, 159, 0.7); 
         }
 
         .activate-btn {
             background: linear-gradient(135deg, #b829ff, #6b11a8); color: var(--gold-light); border: 2px solid var(--gold-light);
             padding: 1.8vh 4vw; font-size: clamp(1.05rem, 1.35vw, 1.4rem); font-weight: 800; border-radius: 50px; cursor: pointer; 
             text-transform: uppercase; letter-spacing: 2.5px; box-shadow: 0 0 40px rgba(184, 41, 255, 0.8);
-            transition: transform 0.3s, box-shadow 0.3s; font-family: 'Playfair Display', serif; transform: translateZ(70px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease; font-family: 'Playfair Display', serif; transform: translateZ(70px);
         }
-        .activate-btn:hover { transform: translateZ(80px) scale(1.06); box-shadow: 0 0 65px rgba(255, 234, 159, 1); }
+        .activate-btn:hover { transform: translateZ(90px) scale(1.08); box-shadow: 0 0 70px rgba(255, 234, 159, 1); }
 
         .progress-container { position: fixed; top: 0; left: 0; width: 100vw; height: 5px; background: rgba(255, 255, 255, 0.1); z-index: 100; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #b829ff, var(--milk-white), var(--gold-light)); box-shadow: 0 0 20px #b829ff; transition: width 0.4s ease-out; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #b829ff, var(--milk-white), var(--gold-light)); box-shadow: 0 0 20px #b829ff; transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
         .stage {
             position: relative; width: 100vw; height: 100vh; z-index: 2;
@@ -134,7 +140,7 @@
             box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), inset 0 0 40px rgba(184, 41, 255, 0.25);
             opacity: 0; visibility: hidden; pointer-events: none; transform-style: preserve-3d;
             transform: translateZ(-900px) rotateX(25deg) scale(0.6);
-            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.1s ease-out, visibility 0.7s;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.1, 1, 0.3, 1), visibility 0.8s;
             display: flex; gap: 3vw; align-items: center; justify-content: space-between;
         }
 
@@ -149,16 +155,16 @@
         .text-side { flex: 1.1; z-index: 2; display: flex; flex-direction: column; justify-content: center; transform: translateZ(50px); }
         .img-side { flex: 1.25; z-index: 2; transform: translateZ(60px); position: relative; display: flex; flex-direction: column; justify-content: center; gap: 1.2vh; }
 
-        /* HIỆU ỨNG XUẤT HIỆN ĐỘNG CHO CÁC THÀNH PHẦN CHỮ KHI KÍCH HOẠT SLIDE */
+        /* HIỆU ỨNG XUẤT HIỆN ĐỘNG MƯỢT MÀ CHO CÁC THÀNH PHẦN CHỮ */
         .slide-card.active .badge { animation: badgeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
         .slide-card.active h2 { animation: titleZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
         .slide-card.active h1.hero-title { animation: titleZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
         .slide-card.active p.hero-sub { animation: textFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
         
-        .slide-card.active ul li:nth-child(1) { animation: listStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
-        .slide-card.active ul li:nth-child(2) { animation: listStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
-        .slide-card.active ul li:nth-child(3) { animation: listStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
-        .slide-card.active ul li:nth-child(4) { animation: listStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both; }
+        .slide-card.active ul li:nth-child(1) { animation: listStagger 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+        .slide-card.active ul li:nth-child(2) { animation: listStagger 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+        .slide-card.active ul li:nth-child(3) { animation: listStagger 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
+        .slide-card.active ul li:nth-child(4) { animation: listStagger 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both; }
 
         .slide-card.active .img-box-wrapper:nth-child(1) { animation: imgAnim1 1.0s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
         .slide-card.active .img-box-wrapper:nth-child(2) { animation: imgAnim2 1.0s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
@@ -231,12 +237,24 @@
         li::before { content: '💜'; position: absolute; left: 0; font-size: 0.8rem; top: 0.1vh; filter: drop-shadow(0 0 5px #b829ff); }
         li b { color: var(--gold-light); font-weight: 700; }
 
+        /* HIỆU ỨNG HOVER NẢY CHỮ TRÊN TOÀN BỘ VĂN BẢN */
+        .hover-bounce-char {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease, text-shadow 0.25s ease;
+        }
+        .hover-bounce-char:hover {
+            transform: translateY(-8px) scale(1.2) translateZ(20px);
+            color: var(--gold-light);
+            text-shadow: 0 0 15px var(--gold-light), 0 0 25px var(--blue-soft);
+            z-index: 10;
+        }
+
         .img-frame {
             width: 100%; height: 26vh; max-height: 220px; min-height: 150px;
             border-radius: 12px; overflow: hidden; border: 2.5px solid #b829ff;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 30px rgba(184, 41, 255, 0.4);
             background: #000; position: relative; display: flex; align-items: center; justify-content: center;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
         }
         .img-grid-3 .row-bot .img-frame { height: 20vh; max-height: 170px; }
 
@@ -381,7 +399,7 @@
             </div>
         </div>
 
-        <!-- Slide 06 (Phủ Na) - 3 Ảnh (1 Trên - 2 Dưới) -->
+        <!-- Slide 06 (Phủ Na) - BẮT ĐẦU NHẠC 2 (Index = 5) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Như Thanh • Tín ngưỡng dân gian</span>
@@ -545,6 +563,38 @@
     </div>
 
     <script>
+        // Hàm bọc từng chữ cái thành span để áp dụng hiệu ứng nảy chữ cực mượt khi hover
+        function wrapCharactersInElement(element) {
+            const walkTextNodes = (node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const text = node.nodeValue;
+                    if (!text.trim()) return;
+                    const fragment = document.createDocumentFragment();
+                    for (let i = 0; i < text.length; i++) {
+                        const char = text[i];
+                        if (char === ' ') {
+                            fragment.appendChild(document.createTextNode(' '));
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'hover-bounce-char';
+                            span.textContent = char;
+                            fragment.appendChild(span);
+                        }
+                    }
+                    node.parentNode.replaceChild(fragment, node);
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+                    Array.from(node.childNodes).forEach(walkTextNodes);
+                }
+            };
+            walkTextNodes(element);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.slide-card h1, .slide-card h2, .slide-card p, .slide-card li, .slide-card .badge, .slide-card .caption').forEach(el => {
+                wrapCharactersInElement(el);
+            });
+        });
+
         const msgText = "Xin chào cô và các bạn! Tổ 1 hân hạnh đưa mọi người vào hành trình khám phá 10 di sản lễ hội văn hóa đặc sắc nhất xứ Thanh.";
         const container = document.getElementById('matrix-text');
         
@@ -555,7 +605,7 @@
 
             word.split('').forEach(char => {
                 const span = document.createElement('span');
-                span.className = 'char-fly';
+                span.className = 'char-fly hover-bounce-char';
                 span.innerText = char;
                 
                 const rx = (Math.random() - 0.5) * 1000;
@@ -603,8 +653,8 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
 
-            const rx = (mouseY / window.innerHeight - 0.5) * -16;
-            const ry = (mouseX / window.innerWidth - 0.5) * 16;
+            const rx = (mouseY / window.innerHeight - 0.5) * -12;
+            const ry = (mouseX / window.innerWidth - 0.5) * 12;
 
             if(!splashScreen.classList.contains('hidden')) {
                 splashCard.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
@@ -657,13 +707,14 @@
             idx = (n + cards.length) % cards.length;
             cards[idx].classList.add('active');
             
-            const rx = (mouseY / window.innerHeight - 0.5) * -16;
-            const ry = (mouseX / window.innerWidth - 0.5) * 16;
+            const rx = (mouseY / window.innerHeight - 0.5) * -12;
+            const ry = (mouseX / window.innerWidth - 0.5) * 12;
             cards[idx].style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
 
             document.getElementById('curr').innerText = String(idx + 1).padStart(2, '0');
             progressBar.style.width = `${((idx + 1) / cards.length) * 100}%`;
 
+            // Bắt đầu phát nhạc 2 ngay tại Slide 6 (Phủ Na, tương ứng với idx = 5)
             if (idx >= 5) {
                 bgAudio.pause();
                 last2Audio.volume = 0.8;
