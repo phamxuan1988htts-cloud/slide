@@ -379,7 +379,7 @@
             </div>
         </div>
 
-        <!-- Slide 05 (Đền Bà Triệu) - 2 Ảnh -->
+        <!-- Slide 05 (Đền Bà Triệu) - BẮT ĐẦU NHẠC 2 (Index = 4) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Hậu Lộc • Hào khí lịch sử</span>
@@ -399,7 +399,7 @@
             </div>
         </div>
 
-        <!-- Slide 06 (Phủ Na) - BẮT ĐẦU NHẠC 2 (Index = 5) -->
+        <!-- Slide 06 (Phủ Na) - 3 Ảnh (1 Trên - 2 Dưới) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Như Thanh • Tín ngưỡng dân gian</span>
@@ -714,8 +714,8 @@
             document.getElementById('curr').innerText = String(idx + 1).padStart(2, '0');
             progressBar.style.width = `${((idx + 1) / cards.length) * 100}%`;
 
-            // Bắt đầu phát nhạc 2 ngay tại Slide 6 (Phủ Na, tương ứng với idx = 5)
-            if (idx >= 5) {
+            // Bắt đầu phát nhạc 2 ngay tại Slide 5 (Đền Bà Triệu, tương ứng với idx = 4)
+            if (idx >= 4) {
                 bgAudio.pause();
                 last2Audio.volume = 0.8;
                 if (last2Audio.paused && last2Audio.currentTime === 0) {
