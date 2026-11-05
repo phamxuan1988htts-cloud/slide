@@ -85,11 +85,6 @@
             animation: flyAndAssemble 2.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             animation-delay: calc(0.3s + var(--i) * 0.025s);
         }
-        .char-fly:hover {
-            transform: translateY(-10px) scale(1.25) translateZ(30px);
-            color: var(--gold-light);
-            text-shadow: 0 0 20px var(--gold-light), 0 0 35px var(--blue-soft);
-        }
 
         @keyframes flyAndAssemble {
             0% { opacity: 0; transform: translate(var(--rand-x), var(--rand-y)) scale(3.5) rotate(calc(var(--rand-r) * 1deg)); filter: blur(18px); color: var(--gold-light); }
@@ -155,7 +150,6 @@
         .text-side { flex: 1.1; z-index: 2; display: flex; flex-direction: column; justify-content: center; transform: translateZ(50px); }
         .img-side { flex: 1.25; z-index: 2; transform: translateZ(60px); position: relative; display: flex; flex-direction: column; justify-content: center; gap: 1.2vh; }
 
-        /* HIỆU ỨNG XUẤT HIỆN ĐỘNG MƯỢT MÀ CHO CÁC THÀNH PHẦN CHỮ */
         .slide-card.active .badge { animation: badgeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
         .slide-card.active h2 { animation: titleZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
         .slide-card.active h1.hero-title { animation: titleZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
@@ -233,21 +227,9 @@
         p.hero-sub { font-size: clamp(1rem, 1.3vw, 1.35rem); color: var(--blue-mint); font-weight: 400; font-style: italic; line-height: 1.5; }
 
         ul { font-size: clamp(0.85rem, 1vw, 1.05rem); line-height: 1.6; list-style: none; color: var(--milk-white); }
-        li { position: relative; padding-left: 1.8vw; margin-bottom: 1vh; }
+        li { position: relative; padding-left: 1.8vw; margin-bottom: 1vh; word-wrap: break-word; overflow-wrap: break-word; }
         li::before { content: '💜'; position: absolute; left: 0; font-size: 0.8rem; top: 0.1vh; filter: drop-shadow(0 0 5px #b829ff); }
         li b { color: var(--gold-light); font-weight: 700; }
-
-        /* HIỆU ỨNG HOVER NẢY CHỮ TRÊN TOÀN BỘ VĂN BẢN */
-        .hover-bounce-char {
-            display: inline-block;
-            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease, text-shadow 0.25s ease;
-        }
-        .hover-bounce-char:hover {
-            transform: translateY(-8px) scale(1.2) translateZ(20px);
-            color: var(--gold-light);
-            text-shadow: 0 0 15px var(--gold-light), 0 0 25px var(--blue-soft);
-            z-index: 10;
-        }
 
         .img-frame {
             width: 100%; height: 26vh; max-height: 220px; min-height: 150px;
@@ -304,8 +286,8 @@
     </div>
 
     <!-- 2 File nhạc -->
-    <audio id="bg-audio" src="original_sound_hung492001yem.mp3"></audio>
-    <audio id="last2-audio" src="original_sound_hthanhdz102.mp3"></audio>
+    <audio id="bg-audio" src="original_sound_hung492001yem.mp3" preload="auto"></audio>
+    <audio id="last2-audio" src="original_sound_hthanhdz102.mp3" preload="auto"></audio>
 
     <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
     <div class="nature-bg"></div>
@@ -334,7 +316,7 @@
             <p class="hero-sub">Hành trình hòa mình vào thiên nhiên, non nước và không gian di sản đất Thanh</p>
         </div>
 
-        <!-- Slide 03 (Lam Kinh) - 2 Ảnh -->
+        <!-- Slide 03 (Lam Kinh) - BẮT ĐẦU PHÁT NHẠC THỨ 2 TỪ ĐÂY (Index = 2) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Thọ Xuân • Di sản Quốc gia đặc biệt</span>
@@ -379,7 +361,7 @@
             </div>
         </div>
 
-        <!-- Slide 05 (Đền Bà Triệu) - BẮT ĐẦU NHẠC 2 (Index = 4) -->
+        <!-- Slide 05 (Đền Bà Triệu) -->
         <div class="slide-card">
             <div class="text-side">
                 <span class="badge">Hậu Lộc • Hào khí lịch sử</span>
@@ -563,38 +545,6 @@
     </div>
 
     <script>
-        // Hàm bọc từng chữ cái thành span để áp dụng hiệu ứng nảy chữ cực mượt khi hover
-        function wrapCharactersInElement(element) {
-            const walkTextNodes = (node) => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    const text = node.nodeValue;
-                    if (!text.trim()) return;
-                    const fragment = document.createDocumentFragment();
-                    for (let i = 0; i < text.length; i++) {
-                        const char = text[i];
-                        if (char === ' ') {
-                            fragment.appendChild(document.createTextNode(' '));
-                        } else {
-                            const span = document.createElement('span');
-                            span.className = 'hover-bounce-char';
-                            span.textContent = char;
-                            fragment.appendChild(span);
-                        }
-                    }
-                    node.parentNode.replaceChild(fragment, node);
-                } else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
-                    Array.from(node.childNodes).forEach(walkTextNodes);
-                }
-            };
-            walkTextNodes(element);
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll('.slide-card h1, .slide-card h2, .slide-card p, .slide-card li, .slide-card .badge, .slide-card .caption').forEach(el => {
-                wrapCharactersInElement(el);
-            });
-        });
-
         const msgText = "Xin chào cô và các bạn! Tổ 1 hân hạnh đưa mọi người vào hành trình khám phá 10 di sản lễ hội văn hóa đặc sắc nhất xứ Thanh.";
         const container = document.getElementById('matrix-text');
         
@@ -605,7 +555,7 @@
 
             word.split('').forEach(char => {
                 const span = document.createElement('span');
-                span.className = 'char-fly hover-bounce-char';
+                span.className = 'char-fly';
                 span.innerText = char;
                 
                 const rx = (Math.random() - 0.5) * 1000;
@@ -698,6 +648,36 @@
             osc.start(); osc.stop(audioCtx.currentTime + 1.0);
         }
 
+        function crossfadeAudio(fromAudio, toAudio, duration = 1500) {
+            let steps = 30;
+            let intervalTime = duration / steps;
+            let step = 0;
+
+            if (!toAudio.paused && toAudio.currentTime > 0) return;
+
+            toAudio.volume = 0;
+            toAudio.play().catch(e => console.log(e));
+
+            let fadeTimer = setInterval(() => {
+                step++;
+                let progress = step / steps;
+                
+                if (fromAudio.volume > 0.05) {
+                    fromAudio.volume = Math.max(0, 0.7 * (1 - progress));
+                }
+                
+                toAudio.volume = Math.min(0.8, 0.8 * progress);
+
+                if (step >= steps) {
+                    clearInterval(fadeTimer);
+                    fromAudio.pause();
+                    fromAudio.currentTime = 0;
+                    fromAudio.volume = 0.7;
+                    toAudio.volume = 0.8;
+                }
+            }, intervalTime);
+        }
+
         function updateCard(n) {
             cards.forEach(c => {
                 c.classList.remove('active');
@@ -714,16 +694,20 @@
             document.getElementById('curr').innerText = String(idx + 1).padStart(2, '0');
             progressBar.style.width = `${((idx + 1) / cards.length) * 100}%`;
 
-            // Bắt đầu phát nhạc 2 ngay tại Slide 5 (Đền Bà Triệu, tương ứng với idx = 4)
-            if (idx >= 4) {
-                bgAudio.pause();
-                last2Audio.volume = 0.8;
-                if (last2Audio.paused && last2Audio.currentTime === 0) {
+            if (idx >= 2) {
+                if (bgAudio && !bgAudio.paused) {
+                    crossfadeAudio(bgAudio, last2Audio, 1500);
+                } else if (last2Audio.paused && last2Audio.currentTime === 0) {
+                    last2Audio.volume = 0.8;
                     last2Audio.play().catch(e => console.log(e));
                 }
             } else {
-                last2Audio.pause();
-                last2Audio.currentTime = 0;
+                if (last2Audio && !last2Audio.paused) {
+                    crossfadeAudio(last2Audio, bgAudio, 1500);
+                } else if (bgAudio.paused && bgStarted) {
+                    bgAudio.volume = 0.7;
+                    bgAudio.play().catch(e => console.log(e));
+                }
             }
 
             startAutoSlideTimer();
@@ -745,7 +729,7 @@
             if (autoSlideTimer) clearTimeout(autoSlideTimer);
 
             if (idx < cards.length - 1) {
-                const randomTime = Math.floor(Math.random() * (5500 - 4000 + 1)) + 5000;
+                const randomTime = Math.floor(Math.random() * (5600 - 4000 + 1)) + 5000;
                 autoSlideTimer = setTimeout(() => {
                     nextSlide();
                 }, randomTime);
